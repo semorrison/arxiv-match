@@ -52,7 +52,7 @@ object Matches {
     for (
       (id, title, authorsXML) <- articles;
       citation <- searchQuery(title, authorsXML)
-    //      if citation.score > 0.75
+          if citation.score > 0.75
     ) yield Match(id, citation.MRNumber, citation.best)
   }
 
