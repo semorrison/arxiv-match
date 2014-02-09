@@ -1,7 +1,9 @@
 package net.tqft.arxivmatch
 
 import scala.io.Source
-import argonaut._, Argonaut._
+import argonaut._
+import Argonaut._
+import scala.io.Codec
 
 object Matches {
   import scala.slick.driver.MySQLDriver.simple._
@@ -34,7 +36,7 @@ object Matches {
         java.net.URLEncoder.encode(text, "UTF-8")
       }
       println("querying: " + query)
-      val json = Source.fromURL("http://polar-dawn-1849.herokuapp.com/?q=" + encode(query)).getLines.mkString("\n")
+      val json = Source.fromURL("http://polar-dawn-1849.herokuapp.com/?q=" + encode(query))(Codec.UTF8).getLines.mkString("\n")
       println(json)
 
       case class Results(query: String, results: List[Citation])
