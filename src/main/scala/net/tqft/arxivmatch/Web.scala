@@ -35,7 +35,7 @@ class ResolverService extends Service[HttpRequest, HttpResponse] {
     val next = None
     
     response.setStatusCode(200)
-    val json = next.map({ "{}" })
+    val json = "{}"
     callback match {
       case Some(c) => {
         response.setContentType("application/javascript")
