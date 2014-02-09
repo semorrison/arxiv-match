@@ -40,7 +40,6 @@ class ResolverService extends Service[HttpRequest, HttpResponse] {
       next.asJson.spaces2
     }
 
-    // s"""{ arxiv: "${next.arxivid}", MRNumber: ${next.MRNumber}, url: "${next.bestURL}" }"""
     callback match {
       case Some(c) => {
         response.setContentType("application/javascript")
