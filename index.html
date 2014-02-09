@@ -1,5 +1,50 @@
 <html>
+<head>
+	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <style>
+		tr td:first-child {padding-left:0px;}
+ 		td {padding:10px 0px 10px 10px;}
+ 		.right { float: right; }
+	</style>
+</head>
 <body>
+<div class="right">
+    <a href="https://github.com/semorrison/arxiv-match/">(github)</a> <a href="https://github.com/semorrison/arxiv-match/issues">(issues)</a>
+</div>
 This webpage will let you decide if candidate matches between the arxiv and mathscinet are correct.
+<table width=100%>
+	<tr>
+		<td width=45%>
+			<div id="arxiv-url-line">Loading ... <a id="arxiv-url" href=""></a></div>
+			<iframe id="arxiv-iframe" width=100% height=600></iframe>
+		</td>
+		<td style="text-align: center;">
+			<div>===&gt; same &lt;===</div>
+			<div>&lt;=== diff ===&gt;</div>
+			<div>==== skip ====</div>			
+		</td>
+		<td width=45%>
+			<div id="other-url-line">Loading ... <a id="other-url" href=""></a></div>
+			<iframe id="other-iframe" width=100% height=600/></iframe>
+		</td>
+	</tr>
+</table>
+<script>
+function callback(response) {
+	var arxivURL = 'http://arxiv.org/pdf/' + response.arxivid;
+	$('#arxiv-url').text(arxivURL);	
+	$('#arxiv-url').attr('href', arxivURL);
+	$('#arxiv-url-line').show();
+	$('#other-url').text(response.bestURL);	
+	$('#other-url').attr('href', response.bestURL);
+	$('#other-url-line').show();
+	$('#arxiv-iframe').attr('src', arxivURL);
+	$('#other-iframe').attr('src', response.bestURL);
+}
+$(document).ready(function() {
+	$.getJSON("http://obscure-inlet-8686.herokuapp.com/?callback=?", callback);
+});
+</script>
+
 </body>
 </html>
