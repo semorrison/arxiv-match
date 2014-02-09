@@ -26,6 +26,7 @@ libraryDependencies ++= Seq(
         "com.github.theon" %% "scala-uri" % "0.3.4",
 	"org.apache.commons" % "commons-lang3" % "3.2.1",
         "mysql" % "mysql-connector-java" % "5.1.24",
+	"io.argonaut" %% "argonaut" % "6.0.1",
         "com.typesafe.slick" %% "slick" % "2.0.0-RC1"
 )
 

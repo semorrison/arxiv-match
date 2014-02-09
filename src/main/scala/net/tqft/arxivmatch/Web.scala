@@ -32,10 +32,15 @@ class ResolverService extends Service[HttpRequest, HttpResponse] {
     import scala.collection.JavaConverters._
     val callback = Option(parameters.get("callback")).map(_.asScala.headOption).flatten
 
-    val next = None
-    
+    val next = Matches.matches.next
+
     response.setStatusCode(200)
-    val json = "{}"
+    val json = {
+      import argonaut._, Argonaut._
+      next.asJson.spaces2
+    }
+
+    // s"""{ arxiv: "${next.arxivid}", MRNumber: ${next.MRNumber}, url: "${next.bestURL}" }"""
     callback match {
       case Some(c) => {
         response.setContentType("application/javascript")
