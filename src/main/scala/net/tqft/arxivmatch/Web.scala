@@ -51,6 +51,9 @@ class ResolverService extends Service[HttpRequest, HttpResponse] {
     val comment = getParameter("comment")
 
     if (arxivid.nonEmpty && MRNumber.nonEmpty && `match`.nonEmpty) {
+      println("Recording match data: ")
+      println(name)
+      println(comment)
       Matches.report(arxivid.get, MRNumber.get, `match`.get, name, comment)
     }
 
