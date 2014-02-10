@@ -28,13 +28,11 @@ class ResolverService extends Service[HttpRequest, HttpResponse] {
   def apply(req: HttpRequest): Future[HttpResponse] = {
     val response = Response()
 
-    
-    
     val parameters = new QueryStringDecoder(req.getUri()).getParameters
-    
+
     def getParameter(p: String) = {
-    	import scala.collection.JavaConverters._
-      Option(parameters.get("callback")).map(_.asScala.headOption).flatten
+      import scala.collection.JavaConverters._
+      Option(parameters.get(p)).map(_.asScala.headOption).flatten
     }
     def getBooleanParameter(p: String) = getParameter(p).map(_.toLowerCase).flatMap({
       case "true" | "yes" => Some(true)
@@ -51,11 +49,11 @@ class ResolverService extends Service[HttpRequest, HttpResponse] {
     val `match` = getBooleanParameter("match")
     val name = getParameter("name")
     val comment = getParameter("comment")
-    
-    if(arxivid.nonEmpty && MRNumber.nonEmpty && `match`.nonEmpty) {
+
+    if (arxivid.nonEmpty && MRNumber.nonEmpty && `match`.nonEmpty) {
       Matches.report(arxivid.get, MRNumber.get, `match`.get, name, comment)
     }
-    
+
     val next = Matches.matches.next
 
     response.setStatusCode(200)
