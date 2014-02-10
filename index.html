@@ -21,9 +21,9 @@ This webpage will let you decide if candidate matches between the arxiv and math
 			<iframe id="arxiv-iframe" width=100% height=600></iframe>
 		</td>
 		<td style="text-align: center;">
-			<div class="button green">===&gt; same &lt;===</div>
-			<div class="button grey">==== skip ====</div>			
-			<div class="button red">&lt;=== diff ===&gt;</div>
+			<div class="button green" id="same">===&gt; same &lt;===</div>
+			<div class="button grey" id="skip">==== skip ====</div>			
+			<div class="button red" id="diff">&lt;=== diff ===&gt;</div>
 			<hr/>
 			<span style="text-align: left;">
 			Your name:
@@ -39,7 +39,9 @@ This webpage will let you decide if candidate matches between the arxiv and math
 	</tr>
 </table>
 <script>
+var lastResponse;
 function callback(response) {
+	lastResponse = response;
 	var arxivURL = 'http://arxiv.org/pdf/' + response.arxivid;
 	$('#arxiv-url').text(arxivURL);	
 	$('#arxiv-url').attr('href', arxivURL);
@@ -51,8 +53,21 @@ function callback(response) {
 	$('#other-iframe').attr('src', response.bestURL);
 }
 $(document).ready(function() {
-	$.getJSON("http://obscure-inlet-8686.herokuapp.com/?callback=?", callback);
+	next(true);
 });
+$('#same').click(function() { next(false, true); });
+$('#skip').click(function() { next(true); });
+$('#diff').click(function() { next(false, false); });
+function next(skip, match) {
+	var query = skip ? "" : ("MRNumber=" + lastResponse.MRNumber + "&arxivid=" + lastResponse.arxivid + "&match=" + (match ? "true" : "false") + "&name=" + escape($('#name').val()) + "&comment=" +  escape($('#comments').val()));
+	$('#comments').val('');
+	$('#arxiv-url-line').hide();
+	$('#other-url-line').hide();
+	$('#arxiv-iframe').attr('src', '');
+	$('#other-iframe').attr('src', '');
+
+	$.getJSON("http://obscure-inlet-8686.herokuapp.com/?callback=?&" + query, callback);	
+}
 </script>
 
 </body>
