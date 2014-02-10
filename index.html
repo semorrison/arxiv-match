@@ -1,10 +1,12 @@
 <html>
 <head>
 	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="button.css">
     <style>
 		tr td:first-child {padding-left:0px;}
  		td {padding:10px 0px 10px 10px;}
  		.right { float: right; }
+ 		.button { border-radius: 15px; }
 	</style>
 </head>
 <body>
@@ -19,9 +21,16 @@ This webpage will let you decide if candidate matches between the arxiv and math
 			<iframe id="arxiv-iframe" width=100% height=600></iframe>
 		</td>
 		<td style="text-align: center;">
-			<div>===&gt; same &lt;===</div>
-			<div>&lt;=== diff ===&gt;</div>
-			<div>==== skip ====</div>			
+			<div class="button green">===&gt; same &lt;===</div>
+			<div class="button grey">==== skip ====</div>			
+			<div class="button red">&lt;=== diff ===&gt;</div>
+			<hr/>
+			<span style="text-align: left;">
+			Your name:
+			<input id="name"/>
+			Comments:
+			<textarea id="comments"></textarea>
+			</span>
 		</td>
 		<td width=45%>
 			<div id="other-url-line">Loading ... <a id="other-url" href=""></a></div>
