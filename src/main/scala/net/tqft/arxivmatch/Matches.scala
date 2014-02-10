@@ -27,8 +27,9 @@ object Matches {
   }
 
   val matches = {
-    case class Citation(MRNumber: Int, best: String, score: Double)
-    def searchQuery(title: String, authorsXML: String): List[Citation] = {
+    case class Citation(MRNumber: Int, best: String)
+      case class CitationScore(citation: Citation, score: Double)
+    def searchQuery(title: String, authorsXML: String): List[CitationScore] = {
       val authors = (for (names <- (scala.xml.XML.loadString("<authors>" + authorsXML + "</authors>") \\ "author").iterator) yield (names \\ "keyname").text + ", " + (names \\ "forenames").text).mkString("", "; ", ";")
       val query = title + " - " + authors
 
@@ -39,21 +40,29 @@ object Matches {
       val json = Source.fromURL("http://polar-dawn-1849.herokuapp.com/?q=" + encode(query))(Codec.UTF8).getLines.mkString("\n")
       println(json)
 
-      case class Results(query: String, results: List[Citation])
-
+      case class Result(query: String, results: List[CitationScore])
+      
       implicit def CitationCodecJson =
-        casecodec3(Citation.apply, Citation.unapply)("MRNumber", "best", "score")
-      implicit def ResultsCodecJson = casecodec2(Results.apply, Results.unapply)("query", "results")
-      val results = json.decodeOption[Results].get.results
+        casecodec2(Citation.apply, Citation.unapply)("MRNumber", "best")
+      implicit def CitationScoreCodecJson =
+        casecodec2(CitationScore.apply, CitationScore.unapply)("citation", "score")
+      implicit def ResultCodecJson = casecodec2(Result.apply, Result.unapply)("query", "results")
+      val results = json.decodeOption[Result].get.results
       println(results)
       results
     }
 
     for (
       (id, title, authorsXML) <- articles;
-      citation <- searchQuery(title, authorsXML)
-          if citation.score > 0.75
+      CitationScore(citation, score) <- searchQuery(title, authorsXML)
+          if score > 0.75;
+          if !citation.best.startsWith("http://arxiv.org/abs/")
     ) yield Match(id, citation.MRNumber, citation.best)
   }
 
+  def report(arxivid: String, MRNumber: Int, `match`: Boolean, name: Option[String], comment: Option[String]) {
+    SQL { implicit session =>
+      SQL.Tables.hotornot.map(_.content) += ((arxivid, MRNumber, `match`, name, comment))
+    }
+  }
 }

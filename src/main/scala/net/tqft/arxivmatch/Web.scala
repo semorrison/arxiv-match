@@ -20,7 +20,7 @@ object Web {
       .name("arxivmatch")
       .bindTo(new InetSocketAddress(port))
       .build(new ResolverService)
-    println("Started.")
+    println("Started arxiv-match.")
   }
 }
 
@@ -28,10 +28,34 @@ class ResolverService extends Service[HttpRequest, HttpResponse] {
   def apply(req: HttpRequest): Future[HttpResponse] = {
     val response = Response()
 
+    
+    
     val parameters = new QueryStringDecoder(req.getUri()).getParameters
-    import scala.collection.JavaConverters._
-    val callback = Option(parameters.get("callback")).map(_.asScala.headOption).flatten
-
+    
+    def getParameter(p: String) = {
+    	import scala.collection.JavaConverters._
+      Option(parameters.get("callback")).map(_.asScala.headOption).flatten
+    }
+    def getBooleanParameter(p: String) = getParameter(p).map(_.toLowerCase).flatMap({
+      case "true" | "yes" => Some(true)
+      case "false" | "no" => Some(false)
+      case _ => None
+    })
+    def getIntParameter(p: String) = getParameter(p).flatMap({
+      case Int(i) => Some(i)
+      case _ => None
+    })
+    val callback = getParameter("callback")
+    val arxivid = getParameter("arxivid")
+    val MRNumber = getIntParameter("MRNumber")
+    val `match` = getBooleanParameter("match")
+    val name = getParameter("name")
+    val comment = getParameter("comment")
+    
+    if(arxivid.nonEmpty && MRNumber.nonEmpty && `match`.nonEmpty) {
+      Matches.report(arxivid.get, MRNumber.get, `match`.get, name, comment)
+    }
+    
     val next = Matches.matches.next
 
     response.setStatusCode(200)
@@ -52,5 +76,13 @@ class ResolverService extends Service[HttpRequest, HttpResponse] {
     }
 
     Future(response)
+  }
+}
+
+object Int {
+  def unapply(s: String): Option[Int] = try {
+    Some(s.toInt)
+  } catch {
+    case _: java.lang.NumberFormatException => None
   }
 }
