@@ -54,17 +54,17 @@ function callback(response) {
 	$('#other-url').text(response.bestURL);	
 	$('#other-url').attr('href', response.bestURL);
 	$('#other-url-line').show();
-	if(arxivURL.indexOf('pdf') == -1) {
-		$("#arxiv-iframe").attr('sandbox', "allow-same-origin allow-scripts allow-forms allow-popups");
-	} else {
-		$("#arxiv-iframe").removeAttr('sandbox');
-	}
+	// if(arxivURL.indexOf('pdf') == -1) {
+	// 	$("#arxiv-iframe").attr('sandbox', "allow-same-origin allow-scripts allow-forms allow-popups");
+	// } else {
+	// 	$("#arxiv-iframe").removeAttr('sandbox');
+	// }
 	$('#arxiv-iframe').attr('src', arxivURL);
-	if(response.bestURL.indexOf('pdf') == -1) {
-		$("#other-iframe").attr('sandbox', "allow-same-origin allow-scripts allow-forms allow-popups");
-	} else {
-		$("#other-iframe").removeAttr('sandbox');
-	}
+	// if(response.bestURL.indexOf('pdf') == -1) {
+	// 	$("#other-iframe").attr('sandbox', "allow-same-origin allow-scripts allow-forms allow-popups");
+	// } else {
+	// 	$("#other-iframe").removeAttr('sandbox');
+	// }
 	$('#other-iframe').attr('src', response.bestURL);
 }
 $(document).ready(function() {
