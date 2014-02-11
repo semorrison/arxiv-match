@@ -6,6 +6,18 @@ import java.sql.Timestamp
 
 object SQL {
 
+  class MathscinetAux(tag: Tag) extends Table[(Int, String, String, String, String, Option[String], Option[String])](tag, "mathscinet_aux") {
+ def MRNumber = column[Int]("MRNumber", O.PrimaryKey)
+  def textTitle = column[String]("textTitle")
+  def wikiTitle = column[String]("wikiTitle")
+  def textAuthors = column[String]("textAuthors")
+  def textCitation = column[String]("textCitation")
+  def pdf = column[Option[String]]("pdf")
+  def free = column[Option[String]]("free")
+  def * = (MRNumber, textTitle, wikiTitle, textAuthors, textCitation, pdf, free)
+  def citationData = (MRNumber, textTitle, wikiTitle, textAuthors, textCitation)
+}
+
   class Arxiv(tag: Tag) extends Table[(String, Date, Date, String, String, String, String, String, String, String, String, String, String, String, String)](tag, "arxiv") {
     def arxivid = column[String]("arxivid", O.PrimaryKey)
     def created = column[Date]("created")
@@ -38,6 +50,7 @@ object SQL {
   
   object Tables {
     val arxiv = TableQuery[Arxiv]
+    val mathscinet_aux = TableQuery[MathscinetAux]
     val hotornot = TableQuery[HotOrNot]
   }
   def apply[A](closure: slick.driver.MySQLDriver.backend.Session => A): A = Database.forURL("jdbc:mysql://mysql.tqft.net/mathematicsliteratureproject?user=mathscinetbot&password=zytopex", driver = "com.mysql.jdbc.Driver") withSession closure

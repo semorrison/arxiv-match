@@ -20,6 +20,9 @@ object Web {
       .name("arxivmatch")
       .bindTo(new InetSocketAddress(port))
       .build(new ResolverService)
+
+    Matches.fill
+
     println("Started arxiv-match.")
   }
 }
@@ -28,53 +31,56 @@ class ResolverService extends Service[HttpRequest, HttpResponse] {
   def apply(req: HttpRequest): Future[HttpResponse] = {
     val response = Response()
 
-    
-    
-    val parameters = new QueryStringDecoder(req.getUri()).getParameters
-    
-    def getParameter(p: String) = {
-    	import scala.collection.JavaConverters._
-      Option(parameters.get("callback")).map(_.asScala.headOption).flatten
-    }
-    def getBooleanParameter(p: String) = getParameter(p).map(_.toLowerCase).flatMap({
-      case "true" | "yes" => Some(true)
-      case "false" | "no" => Some(false)
-      case _ => None
-    })
-    def getIntParameter(p: String) = getParameter(p).flatMap({
-      case Int(i) => Some(i)
-      case _ => None
-    })
-    val callback = getParameter("callback")
-    val arxivid = getParameter("arxivid")
-    val MRNumber = getIntParameter("MRNumber")
-    val `match` = getBooleanParameter("match")
-    val name = getParameter("name")
-    val comment = getParameter("comment")
-    
-    if(arxivid.nonEmpty && MRNumber.nonEmpty && `match`.nonEmpty) {
-      Matches.report(arxivid.get, MRNumber.get, `match`.get, name, comment)
-    }
-    
-    val next = Matches.matches.next
+    println("Handling request " + req)
+    if (req.getUri() == "/favicon.ico") {
+      response.setStatusCode(404)
+    } else {
 
-    response.setStatusCode(200)
-    val json = {
-      import argonaut._, Argonaut._
-      next.asJson.spaces2
-    }
+      val parameters = new QueryStringDecoder(req.getUri()).getParameters
 
-    callback match {
-      case Some(c) => {
-        response.setContentType("application/javascript")
-        response.contentString = c + "(" + json + ");"
+      def getParameter(p: String) = {
+        import scala.collection.JavaConverters._
+        Option(parameters.get("callback")).map(_.asScala.headOption).flatten
       }
-      case None => {
-        response.setContentType("application/json")
-        response.contentString = json
+      def getBooleanParameter(p: String) = getParameter(p).map(_.toLowerCase).flatMap({
+        case "true" | "yes" => Some(true)
+        case "false" | "no" => Some(false)
+        case _ => None
+      })
+      def getIntParameter(p: String) = getParameter(p).flatMap({
+        case Int(i) => Some(i)
+        case _ => None
+      })
+      val callback = getParameter("callback")
+      val arxivid = getParameter("arxivid")
+      val MRNumber = getIntParameter("MRNumber")
+      val `match` = getBooleanParameter("match")
+      val name = getParameter("name")
+      val comment = getParameter("comment")
+
+      if (arxivid.nonEmpty && MRNumber.nonEmpty && `match`.nonEmpty) {
+        Matches.report(arxivid.get, MRNumber.get, `match`.get, name, comment)
+      }
+
+      val next = Matches.next
+
+      response.setStatusCode(200)
+      val json = {
+        import argonaut._, Argonaut._
+        next.asJson.spaces2
+      }
+
+      callback match {
+        case Some(c) => {
+          response.setContentType("application/javascript")
+          response.contentString = c + "(" + json + ");"
+        }
+        case None => {
+          response.setContentType("application/json")
+          response.contentString = json
+        }
       }
     }
-
     Future(response)
   }
 }
