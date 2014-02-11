@@ -59,8 +59,9 @@ object Matches {
 
     for (
       (id, title, authorsXML) <- articles;
-      CitationScore(citation, score) <- searchQuery(title, authorsXML) if score > 0.75;
-      if !citation.best.startsWith("http://arxiv.org/abs/")
+      CitationScore(citation, score) <- searchQuery(title, authorsXML)
+          if score > 0.75;
+          if !citation.best.startsWith("http://arxiv.org/pdf/")
     ) yield Match(id, citation.MRNumber, citation.best)
   }
 

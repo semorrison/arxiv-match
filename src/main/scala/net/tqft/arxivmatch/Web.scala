@@ -35,12 +35,11 @@ class ResolverService extends Service[HttpRequest, HttpResponse] {
     if (req.getUri() == "/favicon.ico") {
       response.setStatusCode(404)
     } else {
-
       val parameters = new QueryStringDecoder(req.getUri()).getParameters
 
       def getParameter(p: String) = {
         import scala.collection.JavaConverters._
-        Option(parameters.get("callback")).map(_.asScala.headOption).flatten
+        Option(parameters.get(p)).map(_.asScala.headOption).flatten
       }
       def getBooleanParameter(p: String) = getParameter(p).map(_.toLowerCase).flatMap({
         case "true" | "yes" => Some(true)
@@ -59,6 +58,9 @@ class ResolverService extends Service[HttpRequest, HttpResponse] {
       val comment = getParameter("comment")
 
       if (arxivid.nonEmpty && MRNumber.nonEmpty && `match`.nonEmpty) {
+        println("Recording match data: ")
+        println(name)
+        println(comment)
         Matches.report(arxivid.get, MRNumber.get, `match`.get, name, comment)
       }
 
