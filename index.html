@@ -55,13 +55,13 @@ function callback(response) {
 	$('#other-url').attr('href', response.bestURL);
 	$('#other-url-line').show();
 	if(arxivURL.indexOf('pdf') == -1) {
-		$("#arxiv-iframe").attr('sandbox', "allow-same-origin allow-scripts allow-forms");
+		$("#arxiv-iframe").attr('sandbox', "allow-same-origin allow-scripts allow-forms allow-popups");
 	} else {
 		$("#arxiv-iframe").removeAttr('sandbox');
 	}
 	$('#arxiv-iframe').attr('src', arxivURL);
 	if(response.bestURL.indexOf('pdf') == -1) {
-		$("#other-iframe").attr('sandbox', "allow-same-origin allow-scripts allow-forms");
+		$("#other-iframe").attr('sandbox', "allow-same-origin allow-scripts allow-forms allow-popups");
 	} else {
 		$("#other-iframe").removeAttr('sandbox');
 	}
