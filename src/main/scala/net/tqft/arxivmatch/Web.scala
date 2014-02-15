@@ -21,8 +21,6 @@ object Web {
       .bindTo(new InetSocketAddress(port))
       .build(new ResolverService)
 
-    Matches.fill
-
     println("Started arxiv-match.")
   }
 }
@@ -64,7 +62,7 @@ class ResolverService extends Service[HttpRequest, HttpResponse] {
         Matches.report(arxivid.get, MRNumber.get, `match`.get, name, comment)
       }
 
-      val next = Matches.next
+      val next = Matches.next(name.getOrElse(""))
 
       response.setStatusCode(200)
       val json = {
