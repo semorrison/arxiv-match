@@ -66,7 +66,8 @@ class ResolverService extends Service[HttpRequest, HttpResponse] {
 
       response.setStatusCode(200)
       val json = {
-        import argonaut._, Argonaut._
+        import argonaut._
+        import Argonaut._
         next.asJson.spaces2
       }
 

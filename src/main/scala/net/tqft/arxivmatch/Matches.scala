@@ -25,11 +25,11 @@ object Matches {
   val articles = Iterator.continually(Iterator.from(0).map(articlesPage).takeWhile(_.nonEmpty).flatten).takeWhile(_.nonEmpty).flatten
 
   case class Match(arxivid: String, MRNumber: Int, bestURL: String)
-//  object Match {
-//    implicit def MatchCodecJson =
-//      casecodec3(Match.apply, Match.unapply)("arxivid", "MRNumber", "bestURL")
-//  }
-//
+  object Match {
+    implicit def MatchCodecJson =
+      casecodec3(Match.apply, Match.unapply)("arxivid", "MRNumber", "bestURL")
+  }
+
 //  private val _matches = {
 //    case class Citation(MRNumber: Int, best: String)
 //    case class CitationScore(citation: Citation, score: Double)
